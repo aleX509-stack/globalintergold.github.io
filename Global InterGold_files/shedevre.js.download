@@ -1,0 +1,311 @@
+var event_msg = {};
+
+var payment = {
+        status: null,
+	PayDone:function(){document.location.reload()}
+};
+
+var cache = {};
+
+var shd_message = {};
+var ERROR_STRING = "";
+var UID_CONTEXT = "";
+var OBJ_CONTEXT = "";
+
+document.onclick = function(event){
+    var evt=window.event || event
+    if (!evt.target)
+        evt.target=evt.srcElement
+    var targetNode = evt.target;
+
+    this.targetNode = targetNode;
+    if(OBJ_CONTEXT!="" && !/open_context\(/.test(targetNode.onclick) && OBJ_CONTEXT!=targetNode)
+    {
+        close_context();
+    }
+
+}
+function is_in(obj)
+{
+    var parent = OBJ_CONTEXT;
+
+    while(obj)
+    {
+        if(obj==parent)
+        {
+            return false;
+        }
+        obj = obj.parentNode;
+    }
+    return true;
+}
+
+function getXY(obj)
+{
+    var curleft = 0;
+    var curtop = 0;
+    var wi = obj.offsetWidth;
+    var hi = obj.offsetHeight;
+    if (obj.offsetParent)
+    {
+        while (obj.offsetParent)
+        {
+            curleft += obj.offsetLeft-obj.scrollLeft;
+            curtop += obj.offsetTop-obj.scrollTop;
+            var position='';
+            if (obj.style&&obj.style.position)
+                position=obj.style.position.toLowerCase();
+            if (!position)
+                if (obj.currentStyle && obj.currentStyle.position)
+                    position = obj.currentStyle.position.toLowerCase();
+            if ((position=='absolute')||(position=='relative')) break;
+            while (obj.parentNode!=obj.offsetParent) {
+                obj=obj.parentNode;
+                curleft -= obj.scrollLeft;
+                curtop -= obj.scrollTop;
+            }
+            obj = obj.offsetParent;
+        }
+    }else{
+        if (obj.x)
+            curleft += obj.x;
+        if (obj.y)
+            curtop += obj.y;
+    }
+    return {
+        x:curleft, 
+        y:curtop, 
+        w:wi, 
+        h:hi
+    };
+}
+function __getXY(a)
+{
+    var str = {
+        x:0,
+        y:0,
+        w:0,
+        h:0
+    };
+    str.x = a.offsetLeft;
+    str.y = a.offsetTop;
+    str.w = a.offsetWidth;
+    str.h = a.offsetHeight;
+    while (a.offsetParent != null)
+    {
+        a = a.offsetParent;
+        str.x += a.offsetLeft;
+        str.y += a.offsetTop;
+    }
+    return str;
+}
+function open_context(id, obj, menu_type_id, event)
+{
+    if(UID_CONTEXT && OBJ_CONTEXT)
+    {
+        close_context();
+    }
+    UID_CONTEXT = id;
+    if(menu_type_id==null)
+    {
+        OBJ_CONTEXT = document.getElementById("context_menu");
+    }else{
+        OBJ_CONTEXT = document.getElementById(menu_type_id);
+    }
+    var d = OBJ_CONTEXT;
+    if(event)
+    {        
+        d.style.left = event.clientX+document.body.scrollLeft+'px';
+        d.style.top = event.clientY+document.body.scrollTop+'px';
+    }else{
+        var xy = getXY(obj);
+
+        if(document.body.clientWidth<xy.x+d.offsetWidth)
+        {
+            d.style.left = (xy.x-d.offsetWidth+6)+"px";
+        }else{
+            d.style.left = (xy.x+obj.offsetWidth)+"px";
+        }
+
+        if(document.body.clientHeight>xy.y+d.offsetHeight)
+        {
+            d.style.top = (xy.y+obj.offsetHeight)+"px";
+        }else{
+            d.style.top = (xy.y-d.offsetHeight+6)+"px";
+        }
+    }
+
+    d.style.visibility = "visible";
+}
+
+
+function close_context()
+{
+    UID_CONTEXT = "";
+    OBJ_CONTEXT.style.visibility = "hidden";
+    OBJ_CONTEXT = "";    
+}
+
+function exe_context_user(tip)
+{
+    switch(tip)
+    {
+        case 0:
+            document.location = "/info/index.php?id="+UID_CONTEXT;
+            break;
+        case 1:
+            invite(UID_CONTEXT);
+            break;
+        case 2:
+            send_msg(UID_CONTEXT);
+            break;
+        case 4:
+            parent.location="/user/profile.php?go=su&uid="+UID_CONTEXT;
+            break;
+
+    }
+}
+
+function exe_context_group(tip)
+{
+}
+
+
+function cntBgCh(obj,f)
+{
+    if(f == 0)
+    {
+        obj.style.backgroundColor= '';
+    }
+    else
+    {
+
+        obj.style.backgroundColor= '#d6e3ff';
+    }
+}
+function clear_form_data()
+{
+    $('.creset').each(function(){
+        if($(this).defaultValue)
+        {
+            $(this).val($(this).defaultValue);
+        }else{
+            $(this).val('');
+        }
+    });
+}
+
+function printDiv(id)
+{
+    var	_console = window.open("","console","width=800,height=600,resizable,scrollbars=yes, toolbar=yes,menubar=yes,titlebar=yes, top=0 left=130");
+    _console.document.write("<html><head><META http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><title></title>");
+    _console.document.write('<style>  </style></head><body>');
+    _console.document.write(document.getElementById(id).innerHTML);
+    _console.document.write("</body></html>");
+	_console.document.close();
+}
+
+
+function dnsstring(str)
+{
+    str = str.toLowerCase();
+    var re = /[^a-z\.0-9-]/g;
+    var re2 = /\.\./g;
+    var re3 = /--/g;
+    str = str.replace(re,"");
+    str = str.replace(re2,".");
+    str = str.replace(re2,".");
+    str = str.replace(re2,".");
+    str = str.replace(re2,".");
+    str = str.replace(re2,".");
+    str = str.replace(re2,".");
+    str = str.replace(re3,"-");
+    str = str.replace(re3,"-");
+    str = str.replace(re3,"-");
+    str = str.replace(re3,"-");
+    str = str.replace(re3,"-");
+    str = str.replace(re3,"-");
+
+    while(str.substring(0,1) == "." || str.substring(0,1) == "-")
+    {
+        str = str.substring(1);
+    }
+    var lhz = str.length ;
+
+    while(str.substring(lhz - 1 ) == "." || str.substring(lhz - 1 ) == "-")
+    {
+        str = str.substring(0, lhz - 1 );
+        lhz = str.length ;
+    }
+
+    return str;
+}
+
+function ajax_f(t, execu)
+{
+    if(typeof(t) == "string")
+        t = document.getElementById(t);
+
+    var options = {
+        url: t.src,
+        success: function(data){
+            if( typeof(execu) == "function" )
+            {
+                execu( data );
+                return;
+            }
+            data = data.replace(/(^\s+)|(\s+$)/g, "");
+            if(data.substr(0, 4) == "eval")
+            {
+                eval(data.substr(5));
+            }
+            else
+            {
+                alert(data);
+            }
+        }
+    };
+    $(t).ajaxSubmit(options);
+}
+
+function ajax_a(t, confirm_text)
+{
+    if(confirm_text)
+    {
+        if (!confirm(confirm_text) ) return false;
+    }
+
+    $.ajax({
+        url: t.href,
+        success: function(data){
+            data = data.replace(/(^\s+)|(\s+$)/g, "");
+            if(data.substr(0, 4) == "eval")
+            {
+                eval(data.substr(5));
+            }
+        }
+    });
+
+    return false;
+}
+/*
+// inicializacija CK editora
+function inicialize_ck(name, width, height, full){
+
+	var expand = false;
+	if (full == 1){
+		expand = true;
+	}
+	return CKEDITOR.replace(name,{
+       // toolbar : 'Basic',
+    	toolbarStartupExpanded : expand,
+        resize_minHeight : 100,
+        resize_minWidth : 150,
+        resize_maxWidth : width,
+        height : height+"px",
+        width : width+"px"
+     //   toolbar :[['Source', 'Bold','Italic','Underline','Strike','-','Subscript','Superscript'],['Link','Unlink']]
+    });
+
+}
+*/

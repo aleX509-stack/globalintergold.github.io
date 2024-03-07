@@ -1,0 +1,533 @@
+function accountMenu__toggle() {
+	
+}
+$(document).ready(function(){
+	$("body").on('click','.navbarToggle',function(){
+		console.log(1);
+		$(this).toggleClass("navbarToggle-collapsed");
+	
+		if($(this).hasClass("navbarToggle-collapsed")) {
+			$(".headerBlock__burgerBlock").addClass("headerBlock__burgerBlock-collapsed");
+		} else {
+			$(".headerBlock__burgerBlock").removeClass("headerBlock__burgerBlock-collapsed");
+		}
+	});
+	
+	$("body").on('click','.dropDown__bttn',function(){
+		var elem = $(this);
+	
+		if(elem.hasClass("dropDown__bttn-active")) {
+			elem.removeClass("dropDown__bttn-active");
+			elem.siblings(".dropDown").removeClass("dropDown-collapsed");
+			
+			$( document ).unbind( 'click' );
+	
+			if(elem.hasClass("langBar__currentLang")) {
+				languageBar(0);
+			}
+	} else {
+			$(".dropDown__bttn").removeClass("dropDown__bttn-active");
+			$(".dropDown").removeClass("dropDown-collapsed");
+			$( document ).unbind( 'click' );
+			languageBar(0);
+	
+			elem.addClass("dropDown__bttn-active");
+			elem.siblings(".dropDown").addClass("dropDown-collapsed");
+	
+			if(elem.hasClass("langBar__currentLang")) {
+				languageBar(1);
+			}
+	
+			setTimeout(function(){
+				$( document ).on( 'click', function ( e ) {
+					if ( !$(e.target).is('[class^="dropDown"]') ) {
+						elem.removeClass("dropDown__bttn-active");
+						elem.siblings(".dropDown").removeClass("dropDown-collapsed");
+						$( document ).unbind( 'click' );
+						if(elem.hasClass("langBar__currentLang")) {
+							languageBar(0);
+						}
+					}
+				});
+			}, 100);
+		}
+	});
+	
+});
+
+function languageBar(flag) {
+	if(flag) {
+		$(".headerBlock__burgerBlock").addClass("headerBlock__burgerBlock-langBar");
+	} else {
+		$(".headerBlock__burgerBlock").removeClass("headerBlock__burgerBlock-langBar");
+	}
+}
+
+var close_function;
+
+var open_menu = function(event) {
+	var elem = event.target;
+	var sel = elem.getAttribute('data-el');
+	if(sel === null) {
+		var elem = event.target.parentElement;
+		var sel = elem.getAttribute('data-el');
+	}
+	var el = document.querySelector('.hover-menu.' + sel);
+	if(el === null) {
+		return false;
+	}
+	var listener = function(ev) {
+		
+		if(ev.target.getAttribute('data-func') == 'open_menu' || ev.target.parentElement.getAttribute('data-func') == 'open_menu' || $(ev.target).hasClass("hover-menu")|| $(ev.target).closest('.hover-menu').length>0) {
+			
+			if(!$(ev.target).hasClass('close'))
+			{
+				ev.prevenDefault;
+				return false;
+			}
+			
+		}
+		
+		if(typeof(validator) != "undefined")
+		validator.resetForm();
+		
+		el.style.width = '0px';
+		el.style.height = '0px';
+		el.style.visibility = 'hidden';
+		
+		//el.style.maxHeight = '0px';
+		document.body.removeEventListener('click', listener);
+	}
+	var getWidth = function() {
+		//return elem.offsetWidth;
+		switch(sel) {
+			case 'sign_in':
+				return "322px";
+			break;
+			case 'profile':
+				//return '182px';
+				return '174px';
+			break;
+			case 'lang':
+				return '99px';
+			break;
+			default:
+				return 'auto';
+			break;
+		}
+	}
+	var getHeight = function() {
+		switch(sel) {
+			case 'sign_in':
+				return '182px';
+			break;
+			case 'profile':
+				return '122px';
+				//return '145.4px';
+			break;
+			case 'lang':
+				return '25px';
+			break;
+			default:
+				return 'auto';
+			break;
+		}
+	}
+	//el.style.width = getWidth() + 'px';
+	el.style.width = getWidth();
+	el.style.height = getHeight();
+
+	//el.style.maxHeight = '250px';
+	el.style.visibility = 'visible';
+	el.style.left = elem.offsetLeft-6 + 'px';
+	el.style.top = (elem.offsetTop + 44) + 'px';
+	document.body.addEventListener('click', listener);
+}
+
+function open_login_dlg() {
+	var html = '';
+	html += '			<div class="title"><lang id="SYSTEM_JS_L1">Log in</lang></div>';
+	html += '			<div class="text"><lang id="SYSTEM_JS_L0">Please make sure you enter your email address and password correctly.</lang></div>';
+	html += '			<form id="login_form" method="post" action="">';
+	html += '			<div class="inp">';
+	html += '				<div class="legend"><lang id="SYSTEM_JS_L2">E-mail</lang></div>';
+	html += '				<div class="input"><input type="text" name="login22"></div>';
+	html += '			</div>';
+	html += '			<div class="inp">';
+	html += '				<div class="legend"><lang id="SYSTEM_JS_L3">Password</lang></div>';
+	html += '				<div class="input"><input type="password" name="pass22" onkeypress="if (event.keyCode == 13) document.getElementById(\'login_form\').submit();"></div>';
+	html += '			</div>';
+	//html += '			<div class="inp">';
+	//html += '				<div class="legend"><label><input type="checkbox" name="remember"> <lang id="SYSTEM_JS_L4">Remember me</lang></label></div>';
+	//html += '			</div>';
+	html += '			<div class="dialog-button u-center-block u-text-center" onclick="document.getElementById(\'login_form\').submit();"><lang id="SYSTEM_JS_L5">Sign in</lang></div>';
+	html += '			</form>';
+	//html += '			<div class="text"><a href="javascript:;" onclick="open_forgotPass_dlg();"><lang id="SYSTEM_JS_L6">Forgot your password?</lang></a><a href="javascript:;" class="pull-right" onclick="open_registration_dlg();"><lang id="SYSTEM_MENU_A1">Registration</lang></a></div>';
+	html += '			<div class="text"><a href="/'+ LANG + '/forgot_password"><lang id="SYSTEM_JS_L6">Forgot your password?</lang></a><a href="/'+ LANG + '/registration" class="pull-right"><lang id="SYSTEM_MENU_A1">Registration</lang></a></div>';
+	dlg.html(html).open();
+	$('.dialog-container').css('position','fixed');
+}
+
+function open_registration_dlg() {
+	
+	$('html, body').animate({scrollTop:0},500);
+	var d = document;
+	var a = function (t) { // apenchild function
+		for(var e=1,n=arguments,a=arguments.length;a>e;e++) {
+			t.appendChild(n[e])
+		}
+		return t;
+	};
+	function r(t) { // remove element
+		t.parentNode.removeChild(t)
+	}
+
+	var divTitle = d.createElement('div');
+		divTitle.className = 'title';
+		divTitle.innerHTML = '<lang id="SYSTEM_JS_L7">Create a new account</lang>';
+	var divText = d.createElement('div');
+		divText.className = 'text';
+		divText.innerHTML = '<lang id="SYSTEM_JS_L8">It only takes a few minutes to create a new user profile.</lang>';
+	var form = d.createElement('form');
+		form.id = 'reg_form';
+	//var formInput = d.createElement('input');
+	//	formInput.type = 'hidden';
+	//	formInput.name = 'a';
+	//	formInput.value = 'i_registration';
+		
+	var divInp1 = d.createElement('div');
+		divInp1.className = 'inp';
+	var divLegend1 = d.createElement('div');
+		divLegend1.className = 'legend';
+		divLegend1.innerHTML = 'Name';
+	var divInput1 = d.createElement('div');
+		divInput1.className = 'input two';
+	var formInput1 = d.createElement('input');
+		formInput1.type = 'text';
+		formInput1.name = 'reg_name';
+		formInput1.placeholder = '<lang id="SYSTEM_JS_L9">First Name</lang>';
+		formInput1.setAttribute('oplaceholder', 'First Name');
+	var divInp2 = d.createElement('div');
+		divInp2.className = 'inp';
+	var divLegend2 = d.createElement('div');
+		divLegend2.className = 'legend';
+		divLegend2.innerHTML = '<lang id="SYSTEM_JS_L10">Surname</lang>';
+	var divInput2 = d.createElement('div');
+		divInput2.className = 'input';
+	var formInput2 = d.createElement('input');
+		formInput2.type = 'text';
+		formInput2.name = 'reg_surname';
+		formInput2.setAttribute('oplaceholder', 'Last Name');
+		formInput2.placeholder = '<lang id="SYSTEM_JS_L11">Last Name</lang>';
+	var divInp3 = d.createElement('div');
+		divInp3.className = 'inp';
+	var divLegend3 = d.createElement('div');
+		divLegend3.className = 'legend';
+		divLegend3.innerHTML = '<lang id="SYSTEM_JS_L12">E-mail</lang>';
+	var divInput3 = d.createElement('div');
+		divInput3.className = 'input';
+	var formInput3 = d.createElement('input');
+		formInput3.type = 'text';
+		formInput3.name = 'reg_email';
+		formInput3.setAttribute('oplaceholder', 'Enter your email');
+		formInput3.placeholder = '<lang id="SYSTEM_JS_L13">Enter your email</lang>';
+	var divInp4 = d.createElement('div');
+		divInp4.className = 'inp';
+	var divLegend4 = d.createElement('div');
+		divLegend4.className = 'legend';
+		divLegend4.innerHTML = 'Password';
+	var divInput4 = d.createElement('div');
+		divInput4.className = 'input';
+	var formInput4 = d.createElement('input');
+		formInput4.type = 'password';
+		formInput4.id = 'reg_pass1';
+		formInput4.name = 'reg_pass1';
+		formInput4.setAttribute('oplaceholder', '6-20 Characters');
+		formInput4.placeholder = '<lang id="SYSTEM_JS_L14">6-20 Characters</lang>';
+	var divInp5 = d.createElement('div');
+		divInp5.className = 'inp';
+	var divLegend5 = d.createElement('div');
+		divLegend5.className = 'legend';
+		divLegend5.innerHTML = '<lang id="SYSTEM_JS_L15">Confirm password</lang>';
+	var divInput5 = d.createElement('div');
+		divInput5.className = 'input';
+	var formInput5 = d.createElement('input');
+		formInput5.type = 'password';
+		formInput5.id = 'reg_pass2';
+		formInput5.name = 'reg_pass2';
+		formInput5.setAttribute('oplaceholder', 'Enter password again');
+		formInput5.placeholder = '<lang id="SYSTEM_JS_L16">Enter password again</lang>';
+	var divInp6 = d.createElement('div');
+		divInp6.className = 'inp';
+	var divLegend6 = d.createElement('div');
+		divLegend6.className = 'input';
+	var divLabel = d.createElement('label');
+	var divLabelSpan = d.createElement('span');
+		divLabelSpan.innerHTML = '<lang id="SYSTEM_JS_L17">I Agree To The Terms & Conditions</lang>';
+	var divChkbx = d.createElement('div');
+		divChkbx.className = 'checkbox';
+		
+	var button = d.createElement('div');
+		button.className = 'dialog-button u-center-block u-text-center';
+		button.innerHTML = 'Create account';
+		button.addEventListener('click', function() {
+			$('#reg_form').submit();
+		});
+	var divText2 = d.createElement('div');
+		divText2.className = 'text';
+		divText2.innerHTML = '<a href="/'+ LANG + '/agreement" target="_blank"><lang id="SYSTEM_JS_L18">User Agreement</lang></a> and <a href="/'+ LANG + '/agreement" target="_blank"><lang id="SYSTEM_JS_L19">Privacy Policy</lang></a>.';
+	dlg.html('')
+	
+	
+	a(d.querySelector('.dialog'), divTitle, divText, a(form, /*formInput,*/ a(divInp1, divLegend1, a(divInput1, formInput1, formInput2)),  a(divInp3, divLegend3, a(divInput3, formInput3, d.createElement('br'), d.createElement('em'))), a(divInp4, divLegend4, a(divInput4, formInput4, d.createElement('br'), d.createElement('em'))), a(divInp5, divLegend5, a(divInput5, formInput5, d.createElement('br'), d.createElement('em'))), a(divInp6, a(divLegend6, a(divLabel, divChkbx, divLabelSpan, d.createElement('br'), d.createElement('em')))), button), divText2);
+	
+	
+	/*
+	a(d.querySelector('.dialog'), divTitle, divText, a(form, formInput, a(divInp1, divLegend1, a(divInput1, formInput1),a(divInput1, formInput2)), a(divInp2, divLegend2, a(divInput2, formInput2, d.createElement('br'), d.createElement('em'))), a(divInp3, divLegend3, a(divInput3, formInput3, d.createElement('br'), d.createElement('em'))), a(divInp4, divLegend4, a(divInput4, formInput4, d.createElement('br'), d.createElement('em'))), a(divInp5, divLegend5, a(divInput5, formInput5, d.createElement('br'), d.createElement('em'))), a(divInp6, a(divLegend6, a(divLabel, divChkbx, divLabelSpan, d.createElement('br'), d.createElement('em')))), button), divText2);
+	
+	*/
+
+	$.validator.addMethod("alphanumeric", function(value, element) {
+		return this.optional(element) || /^[a-z0-9_ ]+$/i.test(value);
+	}, "<lang id='SYSTEM_JS_L20'>This field must contain only Latin characters.</lang>");
+	
+	
+	$.validator.addMethod("alphanumeric2", function(value, element) {
+		return this.optional(element) || /^[a-z0-9\,\+\-\.\_\/\ ]+$/i.test(value);
+	}, "<lang id='SYSTEM_JS_L21'>This field must contain only Latin characters.</lang>");
+
+	$("form#reg_form").validate({
+		"submitHandler": function(form){
+			
+			if($(".dialog .checked").length == 0)
+			{
+				$(".dialog .checkbox").closest(".input").addClass('error');
+				return false;
+			}
+			
+			$(form).ajaxSubmit({
+				"type": "post",
+				"url": "/api/registration/registration/",
+				"beforeSerialize": function () {},
+				"beforeSend": function () {},
+				"success": function (data) {
+					switch(parseInt(data)) {
+						default:
+							dlg.html("<lang id='SYSTEM_JS_L22'>Server Error, please try again later.</lang>").open().onClose(open_registration_dlg);
+						break;
+						case -1:
+							dlg.html('<lang id="SYSTEM_JS_L23">Please sure you enter all required information.</lang>').open().closeAfter(5000).onClose(open_registration_dlg);
+						break;
+						case 1:
+							window.location.href = "/profile/?first=1";
+						break;
+						case 9:
+							dlg.html("<lang id='SYSTEM_JS_L24'>This login is already in use by someone.</lang>").onClose(open_registration_dlg);
+						break;
+					}
+				}
+			});
+		},
+		"rules": {
+			'reg_name': {'required': true, 'alphanumeric': true},
+			'reg_surname': {'required': true, 'alphanumeric': true},
+			'reg_email': {'required': true, 'email': true, 'remote': '/registration/_i.php?a=i_check_login'},
+			'reg_pass1': {'required': true, "minlength": 8, "maxlength":20},
+			'reg_pass2': {'required': true, "equalTo": '#reg_pass1'},
+            'reg_agree': {'required': true}
+		},
+		"messages": {
+			"reg_email": {
+				"remote": "<lang id='SYSTEM_JS_L25'>This email is already in use by someone.</lang>"
+			}
+		},
+		"errorPlacement": function(error, element) {
+
+			$(element).addClass('error');
+			$(element).attr('placeholder',error[0].innerText);
+		}
+	});
+	
+	$(".dialog .checkbox").bind('click',function(){
+	
+		$(this).toggleClass('checked');
+		
+		if($(this).hasClass('checked'))
+		{
+			$(this).closest('.input').removeClass('error');
+		}
+		
+	});
+	
+	$(".dialog .checkbox").closest("label").find('span').bind('click',function(){
+	
+		$(this).closest('.input').find('.checkbox').toggleClass('checked');
+		
+		if($(this).closest('.input').find('.checkbox'))
+		{
+			$(this).closest('.input').removeClass('error');
+		}
+		
+	});
+	
+	
+	
+	dlg.open();
+	d.querySelector('.dialog-container').style.position = 'absolute';
+}
+
+function open_forgotPass_dlg() {
+	var d = document;
+	var a = function (t) { // apendchild function
+		for(var e=1,n=arguments,a=arguments.length;a>e;e++) {
+			t.appendChild(n[e])
+		}
+		return t;
+	};
+	function r(t) { // remove element
+		t.parentNode.removeChild(t)
+	};
+
+	var divTitle = d.createElement('div');
+		divTitle.className = 'title';
+		divTitle.innerHTML = '<lang id="SYSTEM_JS_L26">Restore password</lang>';
+	var divText = d.createElement('div');
+		divText.className = 'text';
+		divText.innerHTML = '<lang id="SYSTEM_JS_L27">Please make sure you enter your email address correctly.</lang>';
+	var form = d.createElement('form');
+		form.id = 'forgot_pass';
+	var formInput = d.createElement('input');
+		formInput.type = 'hidden';
+		formInput.name = 'a';
+		formInput.value = 'i_forgot_pass';
+	var divInp1 = d.createElement('div');
+		divInp1.className = 'inp';
+	var divLegend1 = d.createElement('div');
+		divLegend1.className = 'legend';
+		divLegend1.innerHTML = '<lang id="SYSTEM_JS_L28">E-mail</lang>';
+	var divInput1 = d.createElement('div');
+		divInput1.className = 'input';
+	var formInput2 = d.createElement('input');
+		formInput2.type = 'text';
+		formInput2.name = 'fp_email';
+	var br = d.createElement('br');
+	var em = d.createElement('em');
+	var divInp2 = d.createElement('div');
+		divInp2.className = 'inp';
+	var divLegend2 = d.createElement('div');
+		divLegend2.className = 'legend';
+		divLegend2.innerHTML = '<lang id="SYSTEM_JS_L29">Code</lang>';
+	var divInput2 = d.createElement('div');
+		divInput2.className = 'input';
+	var formInput3 = d.createElement('input');
+		formInput3.type = 'text';
+		formInput3.name = 'fp_captcha';
+		formInput3.style.maxWidth = '280px';
+		//formInput3.style.marginRight = '20px';
+	var captcha = d.createElement('img');
+		captcha.src = '/_lib/pin/pin.php?n=' + ( Math.floor( Math.random() * Math.pow( 10, 9 ) ) );
+		captcha.style.cursor = 'pointer';
+		captcha.style.verticalAlign = 'bottom';
+		captcha.style.border = '2px solid #e2cd9d';
+		captcha.style.height = '41px';
+		captcha.style.float = 'right';
+		captcha.addEventListener('click', function() {
+			this.src = '/_lib/pin/pin.php?n=' + ( Math.floor( Math.random() * Math.pow( 10, 9 ) ) );
+		});
+	var button = d.createElement('div');
+		button.className = 'dialog-button u-center-block u-text-center';
+		button.innerHTML = '<lang id="SYSTEM_JS_L30">Restore</lang>';
+		button.style.marginTop = '40px';
+		button.addEventListener('click', function() {
+			$('#forgot_pass').submit();
+		});
+	var divText2 = d.createElement('div');
+		divText2.className = 'text';
+	var link = d.createElement('a');
+		link.href = 'javascript:;';
+		link.innerHTML = 'Log in';
+		link.addEventListener('click', open_login_dlg);
+
+	dlg.html('');
+	a(d.querySelector('.dialog'), divTitle, divText, a(form, formInput, a(divInp1, divLegend1, a(divInput1, formInput2, br, em)), a(divInp2, divLegend2, a(divInput2, formInput3, captcha)), button), a(divText2, link));
+
+	$( "#forgot_pass" ).validate({
+		/*invalidHandler: function(event, validator) {
+			// 'this' refers to the form
+			var errors = validator.numberOfInvalids();
+			console.debug(validator.errorList);
+			if (errors) {
+				var message = errors == 1
+				? 'You missed 1 field. It has been highlighted'
+				: 'You missed ' + errors + ' fields. They have been highlighted';
+				$("div.error span").html(message);
+				$("div.error").show();
+			} else {
+				$("div.error").hide();
+			}
+		},*/
+		"submitHandler" : function( form ){
+			$( form ).ajaxSubmit({
+				"url": "/registration/_i.php",
+				"type": "post",
+				"beforeSubmit": function(){},
+				"success":function( data ){
+					switch( parseInt( data ) )
+					{
+						case 9:
+							dlg.html( "<lang id='SYSTEM_JS_L31'>Incorrect code.</lang>" ).open().onClose(function(){
+								open_forgotPass_dlg();
+								
+							});
+							
+							dlg.closeAfter(3000);
+							
+							
+						break;
+						case 1:
+							dlg.html( "<lang id='SYSTEM_JS_L32'>Check your E-mail.</lang>" ).open().closeAfter(5000).onClose(function () {location.href = '/'});
+						break;
+						default:
+							dlg.html( "<lang id='SYSTEM_JS_L33'>Server error. Try again later.</lang>" ).open().onClose(open_forgotPass_dlg);
+						break;
+					}
+				}
+			});
+		},
+		"rules" : {
+			"fp_email": {"required": true, email: true},
+		},
+		"errorPlacement": function( error, element ) {
+			error.appendTo( element.parent().find( "em" ) );
+		}
+	});
+	dlg.open();
+	d.querySelector('.dialog-container').style.position = 'fixed';
+}
+
+$(function() {
+	$('.openMenu').on('click', function() {
+		$el = $('.menu');
+		if($el.hasClass('open')) {
+			$el.removeClass('open').addClass('close');
+			$('.menu_btn').removeClass('toggleUp').addClass('toggleDown');
+		} else {
+			$el.removeClass('close').addClass('open');
+			$('.menu_btn').addClass('toggleUp').removeClass('toggleDown');
+		}
+	});
+	
+	$(".navbar-toggle").bind('click',function(){
+		if(!$(this).hasClass('collapsed')) {
+			$('.navbar-collapse').removeClass('in');
+			$(this).addClass('collapsed');
+			$(".headerBlock__menu").removeClass('headerBlock__menu-open');
+		} else {
+			$('.navbar-collapse').addClass('in');	
+			$(this).removeClass('collapsed');
+			$(".headerBlock__menu").addClass('headerBlock__menu-open');
+			$('.div_select').removeClass("shown").find(".up").removeClass("up");
+			$('.basket_collapse').removeClass("shown").find(".up").removeClass("up");
+		}
+	});
+});

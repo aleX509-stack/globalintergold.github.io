@@ -1,0 +1,26 @@
+(function() {
+    var _oldAjax = $.ajax;
+    $.ajax = function(options) {
+        var _oldOptions = $.extend({}, options);
+        
+        $.extend(options, {
+            dataType: 'json',
+            success: function(data) {
+                if (data.status) {
+                    console.log('status.true');
+                    _oldOptions.success(data.response);
+                    return;
+                }
+                
+                alert(data.error);
+                console.log('status.false');
+            },
+            error: function(requestObject) {
+                alert(requestObject.responseText);
+                console.log('error');
+            }
+        });
+
+        return _oldAjax(options);
+    };
+})();
